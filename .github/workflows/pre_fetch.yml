@@ -1,0 +1,36 @@
+name: Pre-fetch Odds
+
+on:
+  schedule:
+    # Todos los días a la 1:00 UTC (2:00 CEST)
+    - cron: '0 1 * * *'
+
+jobs:
+  prefetch:
+    runs-on: ubuntu-latest
+
+    env:
+      API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+      ODDS_API_KEY:     ${{ secrets.ODDS_API_KEY }}
+      SEASON:           '2024'
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run pre-fetch script
+        run: |
+          . venv/bin/activate
+          python scripts/pre_fetch_odds.py
