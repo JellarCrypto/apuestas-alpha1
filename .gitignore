@@ -1,0 +1,12 @@
+# Entorno virtual
+/venv/
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+
+# Caché de nuestra app
+/cache/
+
+# Secrets de Streamlit (no subir claves)
+.streamlit/secrets.toml
