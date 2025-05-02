@@ -1,9 +1,11 @@
 name: Pre-fetch Odds
 
 on:
+  # Ejecución programada diaria a la 1:00 UTC
   schedule:
-    # Todos los días a la 1:00 UTC (2:00 CEST)
     - cron: '0 1 * * *'
+  # Permite lanzar manualmente desde la UI de GitHub
+  workflow_dispatch:
 
 jobs:
   prefetch:
