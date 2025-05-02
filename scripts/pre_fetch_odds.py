@@ -21,7 +21,15 @@ def main():
     top5 = [39, 78, 140, 135, 61]
 
     for league_id in top5:
-        fixtures = fetch_upcoming_fixtures(league_id, season, api_key)
+        try:
+            fixtures = fetch_upcoming_fixtures(league_id, season, api_key)
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 429:
+                print(f"[pre-fetch] ⚠️ Skipped league {league_id} due to rate limit on fixtures")
+                continue
+            else:
+                raise
+
         for f in fixtures:
             dt = isoparse(f["fixture"]["date"])
             if now <= dt <= window_end:
@@ -30,11 +38,9 @@ def main():
                     fetch_odds_for_fixture(fid, api_key)
                     print(f"[pre-fetch] Fixture {fid} cached at {dt.isoformat()}")
                 except requests.exceptions.HTTPError as e:
-                    # Si es exceso de peticiones, solo informamos y seguimos
                     if e.response.status_code == 429:
-                        print(f"[pre-fetch] ⚠️ Skipped fixture {fid} due to rate limit (429)")
+                        print(f"[pre-fetch] ⚠️ Skipped fixture {fid} due to rate limit on odds")
                     else:
-                        # Para otros errores, relanzamos
                         raise
 
     print("[pre-fetch] ✅ Pre‑fetch completed.")
